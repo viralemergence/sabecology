@@ -9,7 +9,8 @@ on:
     - cron: '0 * * * *'
 
 jobs:
-  build:
+  make_csv:
+    name: "Convert the raw data to CSV"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
