@@ -1,0 +1,27 @@
+name: "Clean the GenBank metadata"
+
+# This will run hourly, on PRs, and on pushes from all branches
+on:
+  push:
+    branches:
+  pull_request:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1.4.0]
+        julia-arch: [x86]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@latest
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: "Install packages"
+        run: julia --project -e "import Pkg; Pkg.instantiate(); Pkg.update()"
+      - name: "Read Excel file"
+        run: julia --project scripts/datacleaning/01_excel_to_csv.jl
