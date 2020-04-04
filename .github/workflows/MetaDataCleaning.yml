@@ -16,7 +16,10 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.4.0
-      - name: "Install packages"
-        run: julia --project -e "import Pkg; Pkg.instantiate(); Pkg.update()"
+      - uses: julia-actions/julia-buildpkg@latest
+        env:
+          PYTHON: ""
       - name: "Read Excel file"
         run: julia --project scripts/datacleaning/01_excel_to_csv.jl
+        env:
+          PYTHON: ""
