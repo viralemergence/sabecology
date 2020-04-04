@@ -9,18 +9,25 @@ on:
     - cron: '0 * * * *'
 
 jobs:
-  make_csv:
-    name: "Convert the raw data to CSV"
+  find_hosts:
+    name: "Find hosts in GBIF"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@latest
+      - name: Setup Julia 1.4.0 
+        uses: julia-actions/setup-julia@latest
         with:
           version: 1.4.0
-      - uses: julia-actions/julia-buildpkg@latest
+      - name: Build dependencies 
+        uses: julia-actions/julia-buildpkg@latest
         env:
           PYTHON: ""
-      - name: "Read Excel file"
+      - name: Read Excel file
         run: julia --project scripts/datacleaning/01_excel_to_csv.jl
         env:
           PYTHON: ""
+      - name: Upload usable data folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: hostnames
+          path: data/hostnames/
