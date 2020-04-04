@@ -23,7 +23,7 @@ jobs:
         env:
           PYTHON: ""
       - name: Read Excel file
-        run: julia --project scripts/datacleaning/01_excel_to_csv.jl
+        run: julia --project scripts/datacleaning/01_extract_hosts.jl
         env:
           PYTHON: ""
       - name: Upload usable data folder
