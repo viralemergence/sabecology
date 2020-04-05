@@ -15,12 +15,16 @@ hosts = CSV.read(joinpath("data", "hostnames", "found.csv"))
 unique_taxa = unique(select(hosts, Not(:original)))
 
 ## Get 20 records for the first few taxa as a test
-for taxa_row in eachrow(unique_taxa)
+for taxa_row in eachrow(unique_taxa[1:4,:])
     taxid = taxa_row[Symbol(taxa_row.level)]
     @info "Getting occurrences for $(taxid)"
     best_resolved = taxon(taxid)
-    occ = occurrences(best_resolved, "limit" => 50)
+    occ = occurrences(best_resolved, "limit" => 200)
     # FIXME get more occurrences here
+    get_up_to = minimum(occ.count, 1000)
+    while length(occ) < get_up_to
+        occurrences!(occ)
+    end
     filter!(have_ok_coordinates, occ)
     occ_df = DataFrame(name = String[], occid = Int64[], latitude = Float64[], longitude = Float64[])
     for occurrence in occ
@@ -31,7 +35,7 @@ for taxa_row in eachrow(unique_taxa)
         end
     end
     try
-        CSV.write(joinpath(occurrences_path, replace(taxid, " "=> "_")*".csv"))
+        CSV.write(joinpath(occurrences_path, replace(taxid, " "=> "_")*".csv"), occ_df)
     catch
         @warn "Writing CSV failed for $(taxid)"
     end
