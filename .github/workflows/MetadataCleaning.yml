@@ -22,12 +22,12 @@ jobs:
         uses: julia-actions/julia-buildpkg@latest
         env:
           PYTHON: ""
-      - name: Read Excel file
+      - name: Get names from GBIF
         run: julia --project scripts/datacleaning/01_extract_hosts.jl
         env:
           PYTHON: ""
       - name: Upload usable data folder
         uses: actions/upload-artifact@v1
         with:
-          name: hostnames
+          name: hostnames_csv_files
           path: data/hostnames/
