@@ -6,7 +6,7 @@ on:
     branches:
   pull_request:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '00 00 * * *'
 
 jobs:
   find_hosts:
@@ -31,3 +31,30 @@ jobs:
         with:
           name: hostnames_csv_files
           path: data/hostnames/
+  get_occurrences:
+    name: Get occurrences for known hosts
+    needs: find_hosts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download math result for job 1
+          uses: actions/download-artifact@v1
+          with:
+            name: hostnames_csv_files
+      - uses: actions/checkout@v2
+      - name: Setup Julia 1.4.0 
+        uses: julia-actions/setup-julia@latest
+        with:
+          version: 1.4.0
+      - name: Build dependencies 
+        uses: julia-actions/julia-buildpkg@latest
+        env:
+          PYTHON: ""
+      - name: Get occurrences from GBIF
+        run: julia --project scripts/occurrences/01_occurrences.jl
+        env:
+          PYTHON: ""
+      - name: Upload usable data folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: occurrences_csv_files
+          path: data/occurrences/
