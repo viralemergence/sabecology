@@ -1,0 +1,33 @@
+name: "Clean the GenBank metadata"
+
+# This will run hourly, on PRs, and on pushes from all branches
+on:
+  push:
+    branches:
+  pull_request:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  find_hosts:
+    name: "Find hosts in GBIF"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Julia 1.4.0 
+        uses: julia-actions/setup-julia@latest
+        with:
+          version: 1.4.0
+      - name: Build dependencies 
+        uses: julia-actions/julia-buildpkg@latest
+        env:
+          PYTHON: ""
+      - name: Get names from GBIF
+        run: julia --project scripts/datacleaning/01_extract_hosts.jl
+        env:
+          PYTHON: ""
+      - name: Upload usable data folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: hostnames_csv_files
+          path: data/hostnames/
