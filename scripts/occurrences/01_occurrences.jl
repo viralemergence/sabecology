@@ -15,7 +15,7 @@ hosts = CSV.read(joinpath("data", "hostnames", "found.csv"))
 unique_taxa = unique(select(hosts, Not(:original)))
 
 ## Get 20 records for the first few taxa as a test
-for taxa_row in eachrow(unique_taxa[1:4,:])
+for taxa_row in eachrow(unique_taxa)
     taxid = taxa_row[Symbol(taxa_row.level)]
     @info "Getting occurrences for $(taxid)"
     best_resolved = taxon(taxid)
