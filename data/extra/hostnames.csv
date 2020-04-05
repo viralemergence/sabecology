@@ -1,5 +1,10 @@
 string;species_name
 cat;Felis catus
+domestic cat;Felis catus
 dog;Canis lupus familiaris
 pig;Sus scrofa domesticus
 chicken;Gallus gallus domesticus
+Hipposideros sp.;Hipposideros
+Gallus domesticus;Gallus gallus domesticus
+Tibetan pig;Sus scrofa domesticus
+cow;Bos taurus
