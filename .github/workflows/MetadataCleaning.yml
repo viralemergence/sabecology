@@ -36,12 +36,12 @@ jobs:
     needs: find_hosts
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Retrieve the CSV files with host taxonomy
         uses: actions/download-artifact@v1
         with:
           name: hostnames_csv_files
           path: data/hostnames/
-      - uses: actions/checkout@v2
       - name: Setup Julia 1.4.0 
         uses: julia-actions/setup-julia@latest
         with:
