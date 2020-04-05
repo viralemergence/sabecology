@@ -3,3 +3,5 @@ Manifest.toml
 data/usable
 data/hostnames
 data/occurrences
+data/network
+
