@@ -6,6 +6,10 @@ TODO - description of pipeline
 
 # Modeling project aims
 
+## 0. Sampling spatial and temporal
+
+We likely can't do this until we have the full prevalence data, but can we get descriptors going?
+
 ## 1. Link prediction bake-off
 
 Methods we're likely to try, and who can implement them
@@ -25,4 +29,6 @@ Goals
 
 Needs
 - who can help wrangle the actual sequence data and process it into features?
+
+
 
