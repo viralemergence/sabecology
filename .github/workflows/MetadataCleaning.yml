@@ -60,3 +60,31 @@ jobs:
         with:
           name: occurrences_csv_files
           path: data/occurrences/
+  get_interactions:
+      name: Get interactions for known hosts and cleaned viruses
+      needs: find_hosts
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Retrieve the CSV files with host taxonomy
+          uses: actions/download-artifact@v1
+          with:
+            name: hostnames_csv_files
+            path: data/hostnames/
+        - name: Setup Julia 1.4.0 
+          uses: julia-actions/setup-julia@latest
+          with:
+            version: 1.4.0
+        - name: Build dependencies 
+          uses: julia-actions/julia-buildpkg@latest
+          env:
+            PYTHON: ""
+        - name: Aggregate interaction data
+          run: julia --project scripts/network/01_generate_network_files.jl
+          env:
+            PYTHON: ""
+        - name: Upload usable data folder
+          uses: actions/upload-artifact@v1
+          with:
+            name: interactions_csv_file
+            path: data/network/

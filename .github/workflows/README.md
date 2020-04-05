@@ -56,6 +56,26 @@ The second file is `unknown.csv`, and it has a string that was not matched to a 
 string,count
 ~~~
 
+### `get_interactions` (maint. @tpoisot)
+
+This part of the workflow does a very light and _likely wrong_ cleaning of virus
+names, and merges this to the cleaned host names information It generates a file
+in `data/network/`, under the artifact name `interactions_csv_file`.
+
+It **requires** a succesful run of `find_hosts` in order to run.
+
+The interactions are stored in `interactions.csv`, which is essentially the
+found hosts taxonomy file returned by `find_hosts`, with a few columns removed,
+and the cleaned virus name added. The columns are:
+
+~~~
+virus,accession,level,name,kingdom,kingdom_id,phylum,phylum_id,class,class_id,order,order_id,family,family_id,genus,genus_id,species,species_id
+~~~
+
+**Important note**: the virus names are cleaned by extracting the match of
+`(\w+)vir(us|ales|idae|inae|ina)`, and then converting this to titlecase. This
+begs for a dedicated workflow step to cleanup virus names.
+
 ## Sharing artifacts between jobs
 
 **TODO**
