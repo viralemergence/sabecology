@@ -30,5 +30,14 @@ Goals
 Needs
 - who can help wrangle the actual sequence data and process it into features?
 
+## 3. Spatial host-virus network
 
+Specifically this can be done either in a coarse way like [the synthetic food
+web paper](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.01941), or in a
+slightly more fancy way like in [the Elton & Grinnell
+paper](https://onlinelibrary.wiley.com/doi/10.1111/ecog.04006). Long story
+short, can we map some properties of the network over space? The ingredients for
+this are (i) species distributions and (ii) a network, possibly augmented by
+infered links. I feel like this can go a long way towards a map of spillover
+risk?
 
