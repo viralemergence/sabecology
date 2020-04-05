@@ -21,7 +21,7 @@ for taxa_row in eachrow(unique_taxa)
     best_resolved = taxon(taxid)
     occ = occurrences(best_resolved, "limit" => 200)
     # FIXME get more occurrences here
-    get_up_to = min(occ.count, 1000)
+    get_up_to = min(occ.count, 5000)
     while length(occ) < get_up_to
         occurrences!(occ)
     end
