@@ -1,7 +1,12 @@
-renv::restore()
-
 library("ggmap")
 library("readxl") 
+library("tidyr")
+library("plyr")
+library("dplyr")
+library("Matrix")
+library("lattice")
+library("mgcv")
+
 
 dat <- read_excel("data/raw/GB_CoV_VRL_noSeqs.xls", sheet = "GB_CoV_VRL_noSeqs")
 
