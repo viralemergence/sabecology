@@ -20,7 +20,7 @@ jobs:
         with:
           r-version: '3.5.3' # The R version to download (if necessary) and use.
       - name: Requirements before R packages
-        run: sudo apt install libcurl-openssl-dev
+        run: sudo apt-get install libcurl-openssl-dev
       - name: Make sure renv is there (or make it if not)
         run: Rscript -e 'source("scripts/datacleaning/renv.R")'
       - name: Run the file
