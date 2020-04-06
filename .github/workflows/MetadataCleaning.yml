@@ -1,6 +1,6 @@
 name: "Clean the GenBank metadata"
 
-# This will run hourly, on PRs, and on pushes from all branches
+# This will run once a day at 6am, on PRs, and on pushes to master
 on:
   push:
     branches:
