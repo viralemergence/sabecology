@@ -23,7 +23,7 @@ jobs:
       - name: Run the file
         run: Rscript scripts/datacleaning/02_geolocation.R
         env:
-          API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
+          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
       - name: Upload usable data folder
         uses: actions/upload-artifact@v1
         with:

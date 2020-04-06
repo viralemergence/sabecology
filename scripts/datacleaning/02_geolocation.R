@@ -30,7 +30,7 @@ unique(loc_sep_distinct$loc1) #all countries
 loc_sep_distinct <- loc_sep_distinct[is.na(loc_sep_distinct$loc2)==FALSE, ]
 
 #lat/long from Google maps
-register_google(key = "API")
+register_google(key = Sys.getenv("GEOLOCATION_API_KEY"))
 unique(loc_sep_distinct$gbCountry)
 
 loc_sep_distinct$google <- geocode(as.character(loc_sep_distinct$gbCountry))
