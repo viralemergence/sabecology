@@ -1,9 +1,7 @@
 library("ggmap")
-library("readxl") # Read Excel files
+library("readxl") 
 
 dat <- read_excel("data/raw/GB_CoV_VRL_noSeqs.xls", sheet = "GB_CoV_VRL_noSeqs")
-
-# unique(dat$gbCountry)
 
 #reformat locality string for GEO-locate
 dat$gbCountry_split <- dat$gbCountry
