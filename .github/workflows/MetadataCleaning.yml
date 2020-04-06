@@ -10,6 +10,24 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
+  geolocalize:
+    name: "Fix geolocation data"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '3.5.3' # The R version to download (if necessary) and use.
+      - name: Install packages
+        run: Rscript -e 'install.packages(c("ggmap", "readxl"))'
+      - name: Run the file
+        run: Rscript scripts/datacleaning/02_geolocation.R
+      - name: Upload usable data folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: geolocation_csv_file
+          path: data/geolocation/
   find_hosts:
     name: "Find hosts in GBIF"
     runs-on: ubuntu-latest

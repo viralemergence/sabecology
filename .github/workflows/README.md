@@ -56,11 +56,17 @@ The second file is `unknown.csv`, and it has a string that was not matched to a 
 string,count
 ~~~
 
+### `geolocalize` (maint. @sguth1993)
+
+This part of the workflow fixes the location of the various places in the
+Genbank metadata file. It generates a file in `data/geolocation/`, under the
+artifact name `geolocation_csv_file`.
+
 ### `get_interactions` (maint. @tpoisot)
 
 This part of the workflow does a very light and _likely wrong_ cleaning of virus
-names, and merges this to the cleaned host names information It generates a file
-in `data/network/`, under the artifact name `interactions_csv_file`.
+names, and merges this to the cleaned host names information. It generates a
+file in `data/network/`, under the artifact name `interactions_csv_file`.
 
 It **requires** a succesful run of `find_hosts` in order to run.
 
