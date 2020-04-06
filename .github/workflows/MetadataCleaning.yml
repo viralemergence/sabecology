@@ -1,6 +1,6 @@
 name: "Clean the GenBank metadata"
 
-# This will run hourly, on PRs, and on pushes from all branches
+# This will run once a day at 6am, on PRs, and on pushes to master
 on:
   push:
     branches:
@@ -10,26 +10,6 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
-  geolocalize:
-    name: "Fix geolocation data"
-    runs-on: ubuntu-16.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup R
-        uses: r-lib/actions/setup-r@v1
-        with:
-          r-version: '3.6.2' # The R version to download (if necessary) and use.
-      - name: Requirements before R packages
-        run: sudo apt-get install libcurl4-openssl-dev
-      - name: Make sure renv is there (or make it if not)
-        run: Rscript -e 'source("scripts/datacleaning/renv.R")'
-      - name: Run the file
-        run: Rscript scripts/datacleaning/02_geolocation.R
-      - name: Upload usable data folder
-        uses: actions/upload-artifact@v1
-        with:
-          name: geolocation_csv_file
-          path: data/geolocation/
   find_hosts:
     name: "Find hosts in GBIF"
     runs-on: ubuntu-latest
