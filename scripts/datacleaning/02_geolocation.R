@@ -42,8 +42,8 @@ dat <- merge(dat, google_cord, by = "gbCountry", all.x = TRUE)
 names(dat)
 dat <- dat[ ,-20]
 
-dir.create(file.path("data", "geolocations"), showWarnings = FALSE)
-write.csv(dat, "data/geolocations/coordinate.csv")
+dir.create(file.path("data", "geolocation"), showWarnings = FALSE)
+write.csv(dat, "data/geolocation/coordinate.csv")
 
 missing_loc <- dat[is.na(dat$google_lat)==TRUE, ]
 unique(missing_loc$gbCountry)
