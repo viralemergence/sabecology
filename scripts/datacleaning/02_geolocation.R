@@ -1,4 +1,4 @@
-renv::activate()
+renv::restore()
 
 library("ggmap")
 library("readxl") 
