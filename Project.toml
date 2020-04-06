@@ -7,4 +7,4 @@ GBIF = "ee291a33-5a6c-5552-a3c8-0f29a1181037"
 [compat]
 ExcelFiles = "1.0"
 DataFrames = "0.20"
-
+CSV = "0.6"
