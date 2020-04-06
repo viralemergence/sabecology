@@ -60,7 +60,9 @@ string,count
 
 This part of the workflow fixes the location of the various places in the
 Genbank metadata file. It generates a file in `data/geolocation/`, under the
-artifact name `geolocation_csv_file`.
+artifact name `geolocation_csv_file`. It runs in a **separate workflow** and
+**pushes its output** to `master`. This is because the number of requests is
+limited by the API key.
 
 ### `get_interactions` (maint. @tpoisot)
 
