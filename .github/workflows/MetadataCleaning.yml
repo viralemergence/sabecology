@@ -19,7 +19,9 @@ jobs:
         uses: r-lib/actions/setup-r@v1
         with:
           r-version: '3.5.3' # The R version to download (if necessary) and use.
-      - name: Install packages
+      - name: Requirements before R packages
+        run: sudo apt install libcurl-openssl-dev
+      - name: Install R packages
         run: Rscript -e 'install.packages(c("ggmap", "readxl"))'
       - name: Run the file
         run: Rscript scripts/datacleaning/02_geolocation.R
