@@ -1,5 +1,5 @@
 
-if(file.exists('../../renv.lock')){
+if(file.exists('renv.lock')){
 	renv::activate()
 	print('renv ready to go')
 }else{
