@@ -1,10 +1,10 @@
 name: "Geolocation"
 
-# This will run once a week and on pull requests
+# This will run once a month and on pull requests
 on:
   pull_request:
   schedule:
-    - cron: '0 6 * * 1'
+    - cron: '0 0 1 * *'
 
 jobs:
   geolocalize:
