@@ -1,3 +1,5 @@
+renv::activate()
+
 library("ggmap")
 library("readxl") 
 
