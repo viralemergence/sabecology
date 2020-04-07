@@ -34,23 +34,25 @@ end
 only_hosts = (N; h=0.1) -> augmented_linear_filter(N; α=[0.0, 0.0, 1.0-h, h])
 only_virus = (N; h=0.1) -> augmented_linear_filter(N; α=[0.0, 1.0-h, 0.0, h])
 both_degree = (N; h=0.1) -> augmented_linear_filter(N; α=[0.0, 0.5*(1.0-h), 0.5*(1.0-h), h])
+no_guess = (N; h=0.1) -> augmented_linear_filter(N; α=[(1.0-h)/3, (1.0-h)/3, (1.0-h)/3, h])
 
 ## Run the model and put results in a DataFrame
-lf_output = DataFrame(virus = Symbol[], host = Symbol[], risk_h = Float64[], risk_v = Float64[], risk_b = Float64[])
+lf_output = DataFrame(virus = Symbol[], host = Symbol[], risk_h = Float64[], risk_v = Float64[], risk_b = Float64[], risk_e = Float64[])
 
 Ph = only_hosts(N)
 Pv = only_virus(N)
 Pb = both_degree(N)
+Pn = no_guess(N)
 
 for vir in species(N; dims=1), hos in species(N; dims=2)
     if !N[vir, hos]
         push!(lf_output,
-            (vir, hos, Ph[vir, hos], Pv[vir, hos], Pb[vir, hos])
+            (vir, hos, Ph[vir, hos], Pv[vir, hos], Pb[vir, hos], Pn[vir, hos])
         )
     end
 end
 
-for cname in [:risk_h, :risk_v, :risk_b]
+for cname in [:risk_h, :risk_v, :risk_b, :risk_e]
     m = mean(lf_output[!,cname])
     s = std(lf_output[!,cname])
     lf_output[!,cname] = (lf_output[!,cname].-m)./s

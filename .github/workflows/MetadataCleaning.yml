@@ -88,3 +88,31 @@ jobs:
           with:
             name: interactions_csv_file
             path: data/network/
+  likely_hosts_through_linfilt:
+      name: Predict likely hosts through linear filtering
+      needs: get_interactions
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Retrieve the CSV files with interactions
+          uses: actions/download-artifact@v1
+          with:
+            name: interactions_csv_file
+            path: data/network/
+        - name: Setup Julia 1.4.0 
+          uses: julia-actions/setup-julia@latest
+          with:
+            version: 1.4.0
+        - name: Build dependencies 
+          uses: julia-actions/julia-buildpkg@latest
+          env:
+            PYTHON: ""
+        - name: Aggregate interaction data
+          run: julia --project scripts/analysis/02_linear_filter_interactions.jl
+          env:
+            PYTHON: ""
+        - name: Upload usable data folder
+          uses: actions/upload-artifact@v1
+          with:
+            name: RESULT_likely_hosts_linear_filtering
+            path: results/link_prediction/
