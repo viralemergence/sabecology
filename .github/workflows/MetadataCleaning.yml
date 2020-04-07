@@ -88,3 +88,31 @@ jobs:
           with:
             name: interactions_csv_file
             path: data/network/
+  network_structure:
+      name: Measures the structure of the host-virus network
+      needs: get_interactions
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Retrieve the CSV files with host taxonomy
+          uses: actions/download-artifact@v1
+          with:
+            name: interactions_csv_file
+            path: data/network/
+        - name: Setup Julia 1.4.0 
+          uses: julia-actions/setup-julia@latest
+          with:
+            version: 1.4.0
+        - name: Build dependencies 
+          uses: julia-actions/julia-buildpkg@latest
+          env:
+            PYTHON: ""
+        - name: Aggregate interaction data
+          run: julia --project scripts/analysis/01_network_description.jl
+          env:
+            PYTHON: ""
+        - name: Upload usable data folder
+          uses: actions/upload-artifact@v1
+          with:
+            name: network_structure
+            path: data/network/

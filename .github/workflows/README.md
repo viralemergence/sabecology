@@ -84,6 +84,25 @@ virus,accession,level,name,kingdom,kingdom_id,phylum,phylum_id,class,class_id,or
 `(\w+)vir(us|ales|idae|inae|ina)`, and then converting this to titlecase. This
 begs for a dedicated workflow step to cleanup virus names.
 
+## `network_structure` (maint. @tpoisot)
+
+This part of the workflow performs the usual network analysis, and places the
+results in `data/network/`, under the artifact name `network_structure`.
+
+It **requires** a succesful run of `get_interactions` in order to run.
+
+The interactions are stored in `XXX_level_network_metrics.csv`, where `XXX` can
+be either `genus` or `species`, to represent different aggregations of the
+hosts. The columns are
+
+~~~
+species,degree,community,within_module_z,participation_coefficient
+~~~
+
+The last two colums are the components of the usual functional clustering in
+networks, and can be used to classify nodes as either hubs, connectors,
+peripherals, *etc*.
+
 ## Sharing artifacts between jobs
 
 **TODO**
