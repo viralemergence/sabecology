@@ -84,6 +84,51 @@ virus,accession,level,name,kingdom,kingdom_id,phylum,phylum_id,class,class_id,or
 `(\w+)vir(us|ales|idae|inae|ina)`, and then converting this to titlecase. This
 begs for a dedicated workflow step to cleanup virus names.
 
+### `likely_hosts_through_linfilt` (maint. @tpoisot)
+
+This part of the workflow is an *attempt* at identifying likely hosts based on
+augmented linear filtering, according to Stock et al. 2017. The interactions
+that have been observed are *kept*, and the unobserved interactions are assigned
+a probability under three different models: It generates a file in
+`results/link_prediction/`, under the artifact name
+`RESULT_likely_hosts_linear_filtering`.
+
+It **requires** a succesful run of `get_interactions` in order to run.
+
+The guesses for suitable hosts are stored in the `augmented_linearfiltering.csv`
+file sotred in `results/link_prediction`. The columns are
+
+~~~
+virus,genus,genus_id,risk_h,risk_v,risk_b,risk_e
+~~~
+
+where the `risk_*` columns are the *z-score* of the assigned probabilities based
+on four structural models corresponding to different linear filter parameter
+sets. `risk_h` and `risk_v` consider the probabilities based on viral richess in
+hosts and host range in viruses respectively; `risk_b` considers *both* at the
+same time; `risk_e` is the "no guess" scenario that also accounts for
+connectance when making the prediction. Larger values of the z-score mean that
+this *unobserved* interaction is more likely.
+
+Because hosts that have received more attention will have more interactions, I
+would not look to closely at the `risk_h` column (it consistently has *Homo* as
+the most likely new host, in fact). As an example, here are the top four rows in
+the `risk_b` model.
+
+~~~
+│ Row  │ virus            │ genus        │ genus_id │ risk_h    │ risk_v    │ risk_b    │ risk_e    │
+│      │ Symbol           │ Symbol       │ Int64    │ Float64   │ Float64   │ Float64   │ Float64   │
+├──────┼──────────────────┼──────────────┼──────────┼───────────┼───────────┼───────────┼───────────┤
+│ 1    │ Betacoronavirus  │ Miniopterus  │ 2432501  │ 2.20008   │ 3.41989   │ 4.21172   │ 4.21172   │
+│ 2    │ Coronavirus      │ Camelus      │ 2441236  │ 1.48589   │ 3.23308   │ 3.70564   │ 3.70564   │
+│ 3    │ Gammacoronavirus │ Hipposideros │ 5218553  │ 4.34263   │ 1.80085   │ 3.69734   │ 3.69734   │
+│ 4    │ Alphacoronavirus │ Camelus      │ 2441236  │ 1.48589   │ 3.10853   │ 3.58949   │ 3.58949   │
+~~~
+
 ## Sharing artifacts between jobs
 
-**TODO**
+**TODO #16**
+
+## Developping with artifacts
+
+**TODO #15**
