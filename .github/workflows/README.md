@@ -99,7 +99,7 @@ The guesses for suitable hosts are stored in the `augmented_linearfiltering.csv`
 file sotred in `results/link_prediction`. The columns are
 
 ~~~
-virus,host,risk_h,risk_v,risk_b,risk_e
+virus,genus,genus_id,risk_h,risk_v,risk_b,risk_e
 ~~~
 
 where the `risk_*` columns are the *z-score* of the assigned probabilities based
@@ -112,18 +112,22 @@ this *unobserved* interaction is more likely.
 
 Because hosts that have received more attention will have more interactions, I
 would not look to closely at the `risk_h` column (it consistently has *Homo* as
-the most likely new host, in fact). As an example, here are the top three rows
-in the `risk_b` model.
+the most likely new host, in fact). As an example, here are the top four rows in
+the `risk_b` model.
 
 ~~~
-│ Row │ virus            │ host         │ risk_h  │ risk_v  │ risk_b  │ risk_e  │
-│     │ Symbol           │ Symbol       │ Float64 │ Float64 │ Float64 │ Float64 │
-├─────┼──────────────────┼──────────────┼─────────┼─────────┼─────────┼─────────┤
-│ 1   │ Betacoronavirus  │ Miniopterus  │ 2.20008 │ 3.41989 │ 4.21172 │ 4.21172 │
-│ 2   │ Coronavirus      │ Camelus      │ 1.48589 │ 3.23308 │ 3.70564 │ 3.70564 │
-│ 3   │ Gammacoronavirus │ Hipposideros │ 4.34263 │ 1.80085 │ 3.69734 │ 3.69734 │
+│ Row  │ virus            │ genus        │ genus_id │ risk_h    │ risk_v    │ risk_b    │ risk_e    │
+│      │ Symbol           │ Symbol       │ Int64    │ Float64   │ Float64   │ Float64   │ Float64   │
+├──────┼──────────────────┼──────────────┼──────────┼───────────┼───────────┼───────────┼───────────┤
+│ 1    │ Betacoronavirus  │ Miniopterus  │ 2432501  │ 2.20008   │ 3.41989   │ 4.21172   │ 4.21172   │
+│ 2    │ Coronavirus      │ Camelus      │ 2441236  │ 1.48589   │ 3.23308   │ 3.70564   │ 3.70564   │
+│ 3    │ Gammacoronavirus │ Hipposideros │ 5218553  │ 4.34263   │ 1.80085   │ 3.69734   │ 3.69734   │
+│ 4    │ Alphacoronavirus │ Camelus      │ 2441236  │ 1.48589   │ 3.10853   │ 3.58949   │ 3.58949   │
 ~~~
 
 ## Sharing artifacts between jobs
 
 **TODO**
+
+## Developping with artifacts
+

@@ -3,6 +3,7 @@ import Pkg; Pkg.activate(".")
 import CSV
 using DataFrames
 using EcologicalNetworks
+using Statistics
 
 ## Read the interaction files
 interactions_file = CSV.read(joinpath("data", "network", "interactions.csv"))
@@ -57,6 +58,14 @@ for cname in [:risk_h, :risk_v, :risk_b, :risk_e]
     s = std(lf_output[!,cname])
     lf_output[!,cname] = (lf_output[!,cname].-m)./s
 end
+
+## Merge with taxonomic data
+int_lite = copy(interactions_file)
+select!(int_lite, [:genus, :genus_id])
+int_lite.genus = Symbol.(int_lite.genus)
+lf_output = join(lf_output, unique(int_lite), on = [:host => :genus])
+rename!(lf_output, :host => :genus)
+select!(lf_output, [:virus, :genus, :genus_id, :risk_h, :risk_v, :risk_b, :risk_e])
 
 ## Write the CSV to file
 output_path = joinpath("results", "link_prediction")

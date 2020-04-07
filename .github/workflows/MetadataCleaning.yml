@@ -107,7 +107,7 @@ jobs:
           uses: julia-actions/julia-buildpkg@latest
           env:
             PYTHON: ""
-        - name: Aggregate interaction data
+        - name: Run the linear filter
           run: julia --project scripts/analysis/02_linear_filter_interactions.jl
           env:
             PYTHON: ""
