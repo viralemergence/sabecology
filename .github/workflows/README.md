@@ -127,7 +127,8 @@ the `risk_b` model.
 
 ## Sharing artifacts between jobs
 
-**TODO**
+**TODO #16**
 
 ## Developping with artifacts
 
+**TODO #15**
