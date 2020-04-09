@@ -4,7 +4,7 @@ entity_match = DataFrame(
     name = String[],
     origin = Symbol[],
     row = Integer[],
-    match = Union{UInt64,Nothing}[]
+    match = Union{UInt64,Missing}[]
 )
 
 host_taxonomy = DataFrame(
@@ -32,14 +32,13 @@ virus_taxonomy = DataFrame(
     class = Union{String,Missing}[],
     order = Union{String,Missing}[],
     family = Union{String,Missing}[],
-    genus = Union{String,Missing}[],
-    species = Union{String,Missing}[]
+    genus = Union{String,Missing}[]
 )
 
 associations = DataFrame(
     interaction_id = UInt64[],
-    host_id = UInt64[],
-    virus_id = UInt64[],
+    host = UInt64[],
+    virus = UInt64[],
     source = Symbol[],
     index = Int64[],
     method = Union{Symbol,Missing}[]
