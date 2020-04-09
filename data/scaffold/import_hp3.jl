@@ -135,7 +135,7 @@ for (i,row) in enumerate(eachrow(hp3_assoc))
             entity_match.id[vir_row],
             :HP3,
             i,
-            Symbol(row.DetectionMethod)
+            Symbol(replace(replace(row.DetectionMethod, ", " => "_"), " " => "_"))
         ))
     end
 end
