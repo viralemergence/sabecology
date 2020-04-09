@@ -1,4 +1,4 @@
-entity_match = DataFrame(
+entity_scaffold() = DataFrame(
     id = UInt64[],
     type = Symbol[],
     name = String[],
@@ -7,7 +7,7 @@ entity_match = DataFrame(
     match = Union{UInt64,Missing}[]
 )
 
-host_taxonomy = DataFrame(
+host_scaffold() = DataFrame(
     id = UInt64[],
     kingdom = Union{String,Missing}[],
     phylum = Union{String,Missing}[],
@@ -25,17 +25,20 @@ host_taxonomy = DataFrame(
     species_id = Union{Integer,Missing}[]
 )
 
-virus_taxonomy = DataFrame(
+"""
+    virus_scaffold()
+
+Returns an empty `DataFrame` to store the `id` (a `UInt64` hash), and the
+`viral_order`, `viral_family`, and `viral_genus`, all `Union{Missing,String}`.
+"""
+virus_scaffold() = DataFrame(
     id = UInt64[],
-    kingdom = Union{String,Missing}[],
-    phylum = Union{String,Missing}[],
-    class = Union{String,Missing}[],
-    order = Union{String,Missing}[],
-    family = Union{String,Missing}[],
-    genus = Union{String,Missing}[]
+    viral_order = Union{String,Missing}[],
+    viral_family = Union{String,Missing}[],
+    viral_genus = Union{String,Missing}[]
 )
 
-associations = DataFrame(
+associations_scaffold() = DataFrame(
     interaction_id = UInt64[],
     host = UInt64[],
     virus = UInt64[],
