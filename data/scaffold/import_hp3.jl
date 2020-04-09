@@ -131,8 +131,8 @@ for (i,row) in enumerate(eachrow(hp3_assoc))
         int_hash = hash(row.vVirusNameCorrected*row.hHostNameFinal*"HP3")
         push!(associations, (
             int_hash,
-            entity_match.match[hos_row],
-            entity_match.match[vir_row],
+            entity_match.id[hos_row],
+            entity_match.id[vir_row],
             :HP3,
             i,
             Symbol(row.DetectionMethod)
@@ -140,9 +140,11 @@ for (i,row) in enumerate(eachrow(hp3_assoc))
     end
 end
 
-## Write the results
+## Make the path
 data_path = joinpath("data", "scaffold", "HP3")
 ispath(data_path) || mkdir(data_path)
-CSV.write(joinpath(data_path, "entities.csv"), entity_match)
-CSV.write(joinpath(data_path, "taxonomy.csv"), taxonomy)
-CSV.write(joinpath(data_path, "associations.csv"), associations)
+
+## Write the files
+CSV.write(joinpath(data_path, "entities.csv"), unique(entity_match))
+CSV.write(joinpath(data_path, "taxonomy.csv"), unique(taxonomy))
+CSV.write(joinpath(data_path, "associations.csv"), unique(associations))
