@@ -11,6 +11,11 @@ hp3_files = ["associations", "hosts", "viruses"]
 ## Load the files
 hp3_assoc, hp3_hosts, hp3_viruses = [CSV.read(joinpath(hp3_path, "$(hp3f).csv")) for hp3f in hp3_files]
 
+## Cleanup the ICTV master dataframe
+ictv_master = CSV.read(joinpath("data", "raw", "ictv_master.csv"))
+select!(ictv_master, Not(:Column23))
+#select!(ictv_master, Not(:))
+
 ## Function to hash the names and generate unique identifiers
 function generate_unique_names(text::String, source::String)
     return hash(source * text)
@@ -64,8 +69,7 @@ virus_taxonomy = DataFrame(
 )
 
 ## Facilitate the unpacking of GBIF objects
-import Base: convert
-function convert(::Type{Tuple}, tax::GBIFTaxon)
+function Base.convert(::Type{Tuple}, tax::GBIFTaxon)
     txt = Union{String,Missing}[]
     idx = Union{Integer,Missing}[]
     for l in [:kingdom, :phylum, :class, :order, :family, :genus, :species]
@@ -95,13 +99,13 @@ for (idx, host_row) in enumerate(eachrow(hp3_hosts))
     # Add to the taxonomy table
     match_gbif_hash = isnothing(match_gbif) ? nothing : hash(match_gbif)
     if !isnothing(match_gbif)
-        push!(taxonomy, (
+        push!(host_taxonomy, (
             match_gbif_hash,
             convert(Tuple, match_gbif)...
         ))
     end
     # Return everything
-    push!(entity_match, (entity_hash, host_row.hHostNameFinal, :HP3, idx, match_gbif_hash))
+    push!(entity_match, (entity_hash, :host, host_row.hHostNameFinal, :HP3, idx, match_gbif_hash))
 end
 
 ## Populate with the virus information
