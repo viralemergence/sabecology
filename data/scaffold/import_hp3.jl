@@ -4,6 +4,10 @@ using DataFrames
 import CSV
 using GBIF
 
+## Load the dataframes templates and other functions
+include(joinpath("lib", "dataframes.jl"))
+include(joinpath("lib", "methods.jl"))
+
 ## Specify the paths
 hp3_path = joinpath("data", "raw", "HP3")
 hp3_files = ["associations", "hosts", "viruses"]
@@ -12,83 +16,40 @@ hp3_files = ["associations", "hosts", "viruses"]
 hp3_assoc, hp3_hosts, hp3_viruses = [CSV.read(joinpath(hp3_path, "$(hp3f).csv")) for hp3f in hp3_files]
 
 ## Cleanup the ICTV master dataframe
-ictv_master = CSV.read(joinpath("data", "raw", "ictv_master.csv"))
-select!(ictv_master, Not(:Column23))
-#select!(ictv_master, Not(:))
-
-## Function to hash the names and generate unique identifiers
-function generate_unique_names(text::String, source::String)
-    return hash(source * text)
-end
-
-## Prepare a name match and a taxonomy table
-
-entity_match = DataFrame(
-    id = UInt64[],
-    type = Symbol[],
-    name = String[],
-    origin = Symbol[],
-    row = Integer[],
-    match = Union{UInt64,Nothing}[]
-)
-
-host_taxonomy = DataFrame(
-    id = UInt64[],
-    kingdom = Union{String,Missing}[],
-    phylum = Union{String,Missing}[],
-    class = Union{String,Missing}[],
-    order = Union{String,Missing}[],
-    family = Union{String,Missing}[],
-    genus = Union{String,Missing}[],
-    species = Union{String,Missing}[],
-    kingdom_id = Union{Integer,Missing}[],
-    phylum_id = Union{Integer,Missing}[],
-    class_id = Union{Integer,Missing}[],
-    order_id = Union{Integer,Missing}[],
-    family_id = Union{Integer,Missing}[],
-    genus_id = Union{Integer,Missing}[],
-    species_id = Union{Integer,Missing}[]
-)
-
-virus_taxonomy = DataFrame(
-    id = UInt64[],
-    kingdom = Union{String,Missing}[],
-    phylum = Union{String,Missing}[],
-    class = Union{String,Missing}[],
-    order = Union{String,Missing}[],
-    family = Union{String,Missing}[],
-    genus = Union{String,Missing}[],
-    species = Union{String,Missing}[],
-    kingdom_id = Union{Integer,Missing}[],
-    phylum_id = Union{Integer,Missing}[],
-    class_id = Union{Integer,Missing}[],
-    order_id = Union{Integer,Missing}[],
-    family_id = Union{Integer,Missing}[],
-    genus_id = Union{Integer,Missing}[],
-    species_id = Union{Integer,Missing}[]
-)
-
-## Facilitate the unpacking of GBIF objects
-function Base.convert(::Type{Tuple}, tax::GBIFTaxon)
-    txt = Union{String,Missing}[]
-    idx = Union{Integer,Missing}[]
-    for l in [:kingdom, :phylum, :class, :order, :family, :genus, :species]
-        if !ismissing(getfield(tax, l))
-            push!(txt, getfield(tax, l).first)
-            push!(idx, getfield(tax, l).second)
-        else
-            push!(txt, missing)
-            push!(idx, missing)
+ictv_master = CSV.read(joinpath("data", "raw", "ictv_master.csv"))[!,1:18]
+select!(ictv_master, Not(Symbol("Type Species?")))
+for c_name in names(ictv_master)
+    levels = unique(ictv_master[!,c_name]) 
+    if length(levels)==1
+        if ismissing(only(levels))
+            select!(ictv_master, Not(c_name))
         end
     end
-    return (txt..., idx...)
+end
+ictv_records = unique(ictv_master, Not(:Sort))
+
+## Subset the ICTV file
+for virus in eachrow(ictv_records)
+    push!(
+        virus_taxonomy,
+        (
+            hash(virus),
+            virus.Realm,
+            virus.Phylum,
+            virus.Class,
+            virus.Order,
+            virus.Family,
+            virus.Genus,
+            virus.Species
+        )
+    )
 end
 
 ## Populate the tables with host information
 for (idx, host_row) in enumerate(eachrow(hp3_hosts))
     host_name = "$(host_row.hGenus) $(host_row.hSpecies)"
     # Prepare the entity match
-    entity_hash = generate_unique_names(host_row.hHostNameFinal, "HP3")
+    entity_hash = hash(host_row.hHostNameFinal*"HP3")
     entity_row = idx
     match_gbif = nothing
     try
@@ -137,15 +98,6 @@ end
 # TODO
 
 ## Prepare an association table
-associations = DataFrame(
-    interaction_id = UInt64[],
-    host_id = UInt64[],
-    virus_id = UInt64[],
-    source = Symbol[],
-    index = Int64[],
-    method = Union{Symbol,Missing}[]
-)
-
 for (i,row) in enumerate(eachrow(hp3_assoc))
     vir_row = findfirst(entity_match.name .== row.vVirusNameCorrected)
     hos_row = findfirst(entity_match.name .== row.hHostNameFinal)
