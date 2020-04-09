@@ -3,7 +3,6 @@ import Pkg; Pkg.activate(".")
 using DataFrames
 import CSV
 using GBIF
-using Query
 
 ## Specify the paths
 hp3_path = joinpath("data", "raw", "HP3")
