@@ -3,6 +3,7 @@ import Pkg; Pkg.activate(".")
 using DataFrames
 import CSV
 using GBIF
+using Query
 
 ## Specify the paths
 hp3_path = joinpath("data", "raw", "HP3")
@@ -69,7 +70,7 @@ for (idx, host_row) in enumerate(eachrow(hp3_hosts))
     entity_row = idx
     match_gbif = nothing
     try
-        match_gbif = taxon(host_name, strict=true)
+        match_gbif = taxon(host_name, strict=false)
     catch
         continue
     end
@@ -86,7 +87,6 @@ for (idx, host_row) in enumerate(eachrow(hp3_hosts))
 end
 
 ## Populate with the virus information
-
 for (idx, virus_row) in enumerate(eachrow(hp3_viruses))
     virus_name = "$(virus_row.vGenus)"
     # Prepare the entity match
@@ -115,14 +115,34 @@ end
 # TODO
 
 ## Prepare an association table
-
 associations = DataFrame(
-    interaction_id = Symbol[],
-    host_id = Symbol[],
-    virus_id = Symbol[],
+    interaction_id = UInt64[],
+    host_id = UInt64[],
+    virus_id = UInt64[],
     source = Symbol[],
-    source_index = Symbol[],
+    index = Int64[],
     method = Union{Symbol,Missing}[]
 )
 
+for (i,row) in enumerate(eachrow(hp3_assoc))
+    vir_row = findfirst(entity_match.name .== row.vVirusNameCorrected)
+    hos_row = findfirst(entity_match.name .== row.hHostNameFinal)
+    if !isnothing(vir_row) & !isnothing(hos_row)
+        int_hash = hash(row.vVirusNameCorrected*row.hHostNameFinal*"HP3")
+        push!(associations, (
+            int_hash,
+            entity_match.match[hos_row],
+            entity_match.match[vir_row],
+            :HP3,
+            i,
+            Symbol(row.DetectionMethod)
+        ))
+    end
+end
+
 ## Write the results
+data_path = joinpath("data", "scaffold", "HP3")
+ispath(data_path) || mkdir(data_path)
+CSV.write(joinpath(data_path, "entities.csv"), entity_match)
+CSV.write(joinpath(data_path, "taxonomy.csv"), taxonomy)
+CSV.write(joinpath(data_path, "associations.csv"), associations)

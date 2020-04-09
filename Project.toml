@@ -5,7 +5,7 @@ ExcelFiles = "89b67f3b-d1aa-5f6f-9ca4-282e8d98620d"
 GBIF = "ee291a33-5a6c-5552-a3c8-0f29a1181037"
 
 [compat]
-ExcelFiles = "1.0"
-DataFrames = "0.20"
 CSV = "0.6"
+DataFrames = "0.20"
+ExcelFiles = "1.0"
 GBIF = "0.2"

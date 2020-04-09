@@ -1,0 +1,21 @@
+id,kingdom,phylum,class,order,family,genus,species,kingdom_id,phylum_id,class_id,order_id,family_id,genus_id,species_id
+9650059953952271185,Animalia,Chordata,Mammalia,Rodentia,Cricetidae,Abrothrix,Abrothrix longipilis,1,44,359,1459,3240723,4265090,4265092
+16970197195857710051,Animalia,Chordata,Mammalia,Rodentia,Cricetidae,Abrothrix,Abrothrix olivaceus,1,44,359,1459,3240723,4265090,4265094
+2212249305654324109,Animalia,Chordata,Mammalia,Rodentia,Cricetidae,Abrothrix,Abrothrix sanborni,1,44,359,1459,3240723,4265090,4265091
+13082616881460442589,Animalia,Chordata,Mammalia,Carnivora,Felidae,Acinonyx,Acinonyx jubatus,1,44,359,732,9703,2435269,2435270
+4129394761878368145,Animalia,Chordata,Mammalia,Artiodactyla,Bovidae,Aepyceros,Aepyceros melampus,1,44,359,731,9614,2441143,2441144
+1919260712087566916,Animalia,Chordata,Mammalia,Rodentia,Muridae,Aethomys,Aethomys kaiseri,1,44,359,1459,5510,2438166,2438175
+11036311491533131248,Animalia,Chordata,Mammalia,Rodentia,Muridae,Micaelamys,Micaelamys namaquensis,1,44,359,1459,5510,4264921,4264922
+11911357641017108836,Animalia,Chordata,Mammalia,Rodentia,Cricetidae,Akodon,Akodon azarae,1,44,359,1459,3240723,7791043,2437878
+11706473692354922494,Animalia,Chordata,Mammalia,Rodentia,Cricetidae,Akodon,Akodon montensis,1,44,359,1459,3240723,7791043,4265083
+2827465316318298713,Animalia,Chordata,Mammalia,Rodentia,Cricetidae,Akodon,Akodon paranaensis,1,44,359,1459,3240723,7791043,4265088
+918852363060706166,Viruses,,,Mononegavirales,Rhabdoviridae,Ephemerovirus,,8,,,842,7758,10578820,
+7249896121150161449,Viruses,,,,Parvoviridae,Dependovirus,,8,,,,6233,10458196,
+7249896121150161449,Viruses,,,,Parvoviridae,Dependovirus,,8,,,,6233,10458196,
+7249896121150161449,Viruses,,,,Parvoviridae,Dependovirus,,8,,,,6233,10458196,
+18152368349978234457,Viruses,,,,Polyomaviridae,Polyomavirus,,8,,,,1935,10340671,
+7975634567983682849,Viruses,,,,Retroviridae,Spumavirus,,8,,,,1940,10155658,
+7055020983933784677,Viruses,,,,Reoviridae,Orbivirus,,8,,,,1939,10032890,
+10166289403970578344,Viruses,,,,Asfarviridae,Asfivirus,,8,,,,6228,10266521,
+12106179609008031291,Viruses,,,Picornavirales,Picornaviridae,Kobuvirus,,8,,,844,4517,10169145,
+1724949540715396842,Viruses,,,,Peribunyaviridae,Orthobunyavirus,,8,,,,9761190,10453592,
