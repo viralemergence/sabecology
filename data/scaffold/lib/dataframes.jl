@@ -1,14 +1,12 @@
-entity_scaffold() = DataFrame(
-    id = UInt64[],
-    type = Symbol[],
+entities_scaffold() = DataFrame(
+    id = String[],
+    origin = String[], 
     name = String[],
-    origin = Symbol[],
-    row = Integer[],
-    match = Union{UInt64,Missing}[]
+    match = Union{String,Missing}[]
 )
 
 host_scaffold() = DataFrame(
-    id = UInt64[],
+    id = String[],
     kingdom = Union{String,Missing}[],
     phylum = Union{String,Missing}[],
     class = Union{String,Missing}[],
@@ -26,10 +24,10 @@ host_scaffold() = DataFrame(
 )
 
 associations_scaffold() = DataFrame(
-    interaction_id = UInt64[],
-    host = UInt64[],
-    virus = UInt64[],
-    source = Symbol[],
-    index = Int64[],
-    method = Union{Symbol,Missing}[]
+    id = String[],
+    host = String[],
+    virus = String[],
+    source = String[],
+    index = Any[],
+    method = Union{String,Missing}[]
 )
