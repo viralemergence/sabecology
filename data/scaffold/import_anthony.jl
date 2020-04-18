@@ -17,7 +17,7 @@ include(joinpath(pwd(), "data", "scaffold", "lib", "dataframes.jl"))
 include(joinpath(pwd(), "data", "scaffold", "lib", "methods.jl"))
 
 ## Map the viruses
-anthony_entities_virus = entitities_scaffold()
+anthony_entities_virus = entities_scaffold()
 
 ## Virus mapping
 match_virus = r"(\w+)vir(us|idae|inae|ales)"
