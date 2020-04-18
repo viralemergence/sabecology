@@ -18,6 +18,7 @@ include(joinpath(pwd(), "data", "scaffold", "lib", "methods.jl"))
 
 ## Map the viruses
 anthony_entities_virus = DataFrame(
+    id = String[],
     name = String[],
     match = Union{String,Missing}[]
 )
@@ -31,33 +32,21 @@ for virus_name in unique_virus_names
     
     if isnothing(regex_match)
         push!(anthony_entities_virus, (
-            virus_name, missing
+            string(hash(virus_name*"Anthony")), virus_name, missing
         ))
     else
         matching_idx = findfirst(lowercase.(ictv.name) .== lowercase(regex_match.match))
         if isnothing(matching_idx)
             push!(anthony_entities_virus, (
-                virus_name, missing
+                string(hash(virus_name*"Anthony")), virus_name, missing
             ))
         else
             push!(anthony_entities_virus, (
-                virus_name, ictv.id[matching_idx]
+                string(hash(virus_name*"Anthony")), virus_name, ictv.id[matching_idx]
             ))
         end
     end
 end
-
-## stop
-    
-    
-    
-
-
-
-
-
-
-
 
 ## Hosts
 unique_anth_hosts = filter(!ismissing, unique(anth_raw.gbHost))
