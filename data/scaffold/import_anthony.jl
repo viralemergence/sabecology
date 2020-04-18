@@ -5,46 +5,59 @@ using DataFrames
 import CSV
 using GBIF
 
-## Load the dataframes templates and other functions
-include(joinpath(pwd(), "data", "scaffold", "lib", "dataframes.jl"))
-include(joinpath(pwd(), "data", "scaffold", "lib", "methods.jl"))
-
-## Prepare the scaffolds
-anth_entities = entity_scaffold()
-anth_host = host_scaffold()
-anth_virus = virus_scaffold()
-anth_associations = associations_scaffold()
-
-## Cleanup the ICTV master dataframe
-ictv_master = CSV.read(joinpath(pwd(), "data", "raw", "ictv_master.csv"))[!,1:18]
-select!(ictv_master, Not(Symbol("Type Species?")))
-select!(ictv_master, Not(:Species))
-select!(ictv_master, [:Sort, :Order, :Family, :Genus])
-ictv_records = unique(ictv_master, Not(:Sort))
-
-## Subset the ICTV file
-for virus in eachrow(ictv_records)
-    push!(
-        anth_virus,
-        (hash(virus), virus.Order, virus.Family, virus.Genus)
-    )
-end
-for fam in eachrow(unique(select(ictv_records, [:Order, :Family])))
-    push!(
-        anth_virus,
-        (hash(fam), fam.Order, fam.Family, missing)
-    )
-end
-for ord in unique(anth_virus.viral_order)
-    push!(
-        anth_virus,
-        (hash(ord), ord, missing, missing)
-    )
-end
-
-## Read the Anthony dataset from the CSV file
+## Read the raw data
 anth_data_path = joinpath(pwd(), "data", "raw", "Anthony", "GB_CoV_VRL_noSeqs2.csv")
 anth_raw = CSV.read(anth_data_path; missingstring="NA")
+
+## Load the ICTV master data
+ictv_path = joinpath(pwd(), "data", "scaffold", "ictv.csv")
+ictv = CSV.read(ictv_path, types=[String, String, String, Union{String,Missing}])
+
+## Load the dataframes templates and other functions
+include(joinpath(pwd(), "data", "scaffold", "lib", "methods.jl"))
+
+## Map the viruses
+anthony_entities_virus = DataFrame(
+    name = String[],
+    match = Union{String,Missing}[]
+)
+
+## Virus mapping
+match_virus = r"(\w+)vir(us|idae|inae|ales)"
+unique_virus_names = unique(anth_raw.gbGenus)
+
+for virus_name in unique_virus_names
+    regex_match = match(match_virus, virus_name)
+    
+    if isnothing(regex_match)
+        push!(anthony_entities_virus, (
+            virus_name, missing
+        ))
+    else
+        matching_idx = findfirst(lowercase.(ictv.name) .== lowercase(regex_match.match))
+        if isnothing(matching_idx)
+            push!(anthony_entities_virus, (
+                virus_name, missing
+            ))
+        else
+            push!(anthony_entities_virus, (
+                virus_name, ictv.id[matching_idx]
+            ))
+        end
+    end
+end
+
+## stop
+    
+    
+    
+
+
+
+
+
+
+
 
 ## Hosts
 unique_anth_hosts = filter(!ismissing, unique(anth_raw.gbHost))

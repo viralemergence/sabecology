@@ -25,19 +25,6 @@ host_scaffold() = DataFrame(
     species_id = Union{Integer,Missing}[]
 )
 
-"""
-    virus_scaffold()
-
-Returns an empty `DataFrame` to store the `id` (a `UInt64` hash), and the
-`viral_order`, `viral_family`, and `viral_genus`, all `Union{Missing,String}`.
-"""
-virus_scaffold() = DataFrame(
-    id = UInt64[],
-    viral_order = Union{String,Missing}[],
-    viral_family = Union{String,Missing}[],
-    viral_genus = Union{String,Missing}[]
-)
-
 associations_scaffold() = DataFrame(
     interaction_id = UInt64[],
     host = UInt64[],
