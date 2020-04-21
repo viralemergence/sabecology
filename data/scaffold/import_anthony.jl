@@ -57,6 +57,7 @@ for (i, host) in enumerate(unique_anth_hosts)
     try
         match_gbif = taxon(host, strict=false)
     catch
+        push!(anthony_entities_host, (entity_hash, "Anthony", host, missing))
         continue
     end
     # Add to the taxonomy table
