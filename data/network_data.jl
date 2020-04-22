@@ -27,12 +27,12 @@ associations_merged = join(join(viruses_merged, associations; on=:id=>:virus, ma
 
 ## Get the bats
 bats = associations_merged[associations_merged.order .== "Chiroptera",:]
-bats = bats[.!ismissing.(bats.genus),:]
+bats = bats[.!ismissing.(bats.species),:]
 rename!(bats, :name_1 => :virus)
 select!(bats, Not(r"_id"))
 select!(bats, Not(r"_1"))
 select!(bats, Not(r"_2"))
-for c in [:method, :species, :id, :match, :host, :index, :source, :name, :origin, :kingdom, :phylum, :class, :order]
+for c in [:method, :id, :match, :host, :index, :source, :name, :origin, :kingdom, :phylum, :class, :order]
     select!(bats, Not(c))
 end
 bats = bats[(bats.rank.=="Genus").|(bats.rank.=="Subgenus"),:]
@@ -52,6 +52,7 @@ select!(bats, Not(:rank))
 select!(bats, Not(:ancestor))
 rename!(bats, :family => :host_family)
 rename!(bats, :genus => :host_genus)
+rename!(bats, :species => :host_species)
 bats.virus_genus = vgen
 bats.virus_subgenus = vsubgen
 
