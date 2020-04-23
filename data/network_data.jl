@@ -19,20 +19,31 @@ associations = CSV.read(joinpath(data_path, "associations.csv"); types=associati
 hosts_entities = CSV.read(joinpath(data_path, "entities_hosts.csv"); types=entity_types)
 viruses_entities = CSV.read(joinpath(data_path, "entities_virus.csv"); types=entity_types)
 
-## Merge the stuff
-# TODO rename the intermediary files
-hosts_merged = join(hosts_entities, hosts; on=:match => :id, makeunique=true)
+## Merge the host entities
+hosts_merged = join(hosts_entities, hosts; on=:match => :id)
+rename!(hosts_merged, :name => :host_entity_name)
+rename!(hosts_merged, :match => :host_match)
+rename!(hosts_merged, :id => :host_entity_id)
+
+## Merge the virus entities
 viruses_merged = join(viruses_entities, viruses; on=:match => :id, makeunique=true)
-associations_merged = join(join(viruses_merged, associations; on=:id=>:virus, makeunique=true), hosts_merged; on=:host=>:id, makeunique=true)
+rename!(viruses_merged, :id => :virus_entity_id)
+rename!(viruses_merged, :name => :virus_entity_name)
+rename!(viruses_merged, :match => :virus_match)
+rename!(viruses_merged, :name_1 => :virus_name)
+
+## Merge the associations
+#rename!(associations, :id => :association_id)
+associations_with_viruses = join(viruses_merged, associations; on=[:virus_entity_id=>:virus, :origin=>:source], makeunique=true)
+associations_merged = join(associations_with_viruses, hosts_merged; on=[:origin, :host=>:host_entity_id], makeunique=true)
 
 ## Get the bats
 bats = associations_merged[associations_merged.order .== "Chiroptera",:]
 bats = bats[.!ismissing.(bats.species),:]
-rename!(bats, :name_1 => :virus)
 select!(bats, Not(r"_id"))
-select!(bats, Not(r"_1"))
-select!(bats, Not(r"_2"))
-for c in [:method, :id, :match, :host, :index, :source, :name, :origin, :kingdom, :phylum, :class, :order]
+select!(bats, Not(r"_entity_name"))
+select!(bats, Not(r"_match"))
+for c in [:method, :index, :kingdom, :phylum, :class, :order, :host]
     select!(bats, Not(c))
 end
 bats = bats[(bats.rank.=="Genus").|(bats.rank.=="Subgenus"),:]
@@ -40,14 +51,14 @@ vgen = Union{Missing,String}[]
 vsubgen = Union{Missing,String}[]
 for row in eachrow(bats)
     if row.rank == "Genus"
-        push!(vgen, row.virus)
+        push!(vgen, row.virus_name)
         push!(vsubgen, missing)
     else
         push!(vgen, viruses.name[findfirst(viruses.id .== row.ancestor)])
-        push!(vsubgen, row.virus)
+        push!(vsubgen, row.virus_name)
     end
 end
-select!(bats, Not(:virus))
+select!(bats, Not(:virus_name))
 select!(bats, Not(:rank))
 select!(bats, Not(:ancestor))
 rename!(bats, :family => :host_family)
