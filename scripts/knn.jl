@@ -96,3 +96,9 @@ CSV.write(
     joinpath(predict_path, "bats-bats.corona.csv"),
     BtoB[occursin.("corona", BtoB.virus),:]
 )
+
+## Linear filtering path
+lf_path = joinpath(pwd(), "predictions", "linearfilter")
+ispath(lf_path) || mkpath(lf_path)
+
+## Linear filtering
