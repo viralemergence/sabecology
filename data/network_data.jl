@@ -37,19 +37,18 @@ rename!(viruses_merged, :name_1 => :virus_name)
 associations_with_viruses = join(viruses_merged, associations; on=[:virus_entity_id=>:virus, :origin=>:source], makeunique=true)
 associations_merged = join(associations_with_viruses, hosts_merged; on=[:origin, :host=>:host_entity_id], makeunique=true)
 
-## Get the bats
-bats = associations_merged[associations_merged.order .== "Chiroptera",:]
-bats = bats[.!ismissing.(bats.species),:]
-select!(bats, Not(r"_id"))
-select!(bats, Not(r"_entity_name"))
-select!(bats, Not(r"_match"))
-for c in [:method, :index, :kingdom, :phylum, :class, :order, :host]
-    select!(bats, Not(c))
+## Get the whole thing
+compl = associations_merged[.!ismissing.(associations_merged.species),:]
+select!(compl, Not(r"_id"))
+select!(compl, Not(r"_entity_name"))
+select!(compl, Not(r"_match"))
+for c in [:method, :index, :kingdom, :phylum, :host]
+    select!(compl, Not(c))
 end
-bats = bats[(bats.rank.=="Genus").|(bats.rank.=="Subgenus"),:]
+compl = compl[(compl.rank.=="Genus").|(compl.rank.=="Subgenus"),:]
 vgen = Union{Missing,String}[]
 vsubgen = Union{Missing,String}[]
-for row in eachrow(bats)
+for row in eachrow(compl)
     if row.rank == "Genus"
         push!(vgen, row.virus_name)
         push!(vsubgen, missing)
@@ -58,18 +57,24 @@ for row in eachrow(bats)
         push!(vsubgen, row.virus_name)
     end
 end
-select!(bats, Not(:virus_name))
-select!(bats, Not(:rank))
-select!(bats, Not(:ancestor))
-rename!(bats, :family => :host_family)
-rename!(bats, :genus => :host_genus)
-rename!(bats, :species => :host_species)
-bats.virus_genus = vgen
-bats.virus_subgenus = vsubgen
+select!(compl, Not(:virus_name))
+select!(compl, Not(:rank))
+select!(compl, Not(:ancestor))
+rename!(compl, :family => :host_family)
+rename!(compl, :genus => :host_genus)
+rename!(compl, :class => :host_class)
+rename!(compl, :order => :host_order)
+rename!(compl, :species => :host_species)
+compl.virus_genus = vgen
+compl.virus_subgenus = vsubgen
 
-sort!(bats, :virus_genus)
+sort!(compl, :virus_genus)
+
+## Get the bats
+bats = compl[compl.host_order.=="Chiroptera",:]
 
 ## Write stuff
 net_path = joinpath(pwd(), "data", "interactions")
 ispath(net_path) || mkdir(net_path)
 CSV.write(joinpath(net_path, "chiroptera.csv"), unique(bats))
+CSV.write(joinpath(net_path, "complete.csv"), unique(compl))
