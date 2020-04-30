@@ -36,14 +36,12 @@ B = simplify(U[:,bats])
 M = simplify(U[species(B; dims=1),mammals])
 
 ## kNN preparation
-
 tanimoto(x::Set{T}, y::Set{T}) where {T} = length(x∩y)/length(x∪y)
 
 ## Main loop?
-
 function knn_virus(train::T, predict::T; k::Integer=5, cutoff::Integer=1) where {T <: BipartiteNetwork}
     predictions = DataFrame(virus = String[], host = String[], match = Float64[])
-    for s in species(predict; dims=1)[1:4]
+    for s in species(predict; dims=1)
         @assert s in species(train)
         hosts = train[s,:]
         neighbors = Dict([neighbor => tanimoto(hosts, train[neighbor,:]) for neighbor in filter(x -> x != s, species(train; dims=1))])
@@ -52,7 +50,7 @@ function knn_virus(train::T, predict::T; k::Integer=5, cutoff::Integer=1) where 
         likely = filter(p -> p.second >= cutoff, sort(collect(hosts_count), by=x->x[2], rev=true))
         for l in likely
           push!(predictions,
-            (s, l.first, l.second/length(top_k))
+            (s, l.first, k-l.second+1)
             )
         end
     end
@@ -66,6 +64,7 @@ ispath(predict_path) || mkpath(predict_path)
 
 ## Predict and write
 MtoB = knn_virus(M, B)
+MtoM = knn_virus(M, M)
 BtoB = knn_virus(B, B)
 
 CSV.write(
@@ -76,6 +75,16 @@ CSV.write(
 CSV.write(
     joinpath(predict_path, "mammal-bats.corona.csv"),
     MtoB[occursin.("corona", MtoB.virus),:]
+)
+
+CSV.write(
+    joinpath(predict_path, "mammal-mammal.all.csv"),
+    MtoM    
+)
+
+CSV.write(
+    joinpath(predict_path, "mammal-mammal.corona.csv"),
+    MtoM[occursin.("corona", MtoM.virus),:]
 )
 
 CSV.write(
