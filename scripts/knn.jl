@@ -39,7 +39,7 @@ M = simplify(U[species(B; dims=1),mammals])
 tanimoto(x::Set{T}, y::Set{T}) where {T} = length(x∩y)/length(x∪y)
 
 ## Main loop?
-function knn_virus(train::T, predict::T; k::Integer=5, cutoff::Integer=1) where {T <: BipartiteNetwork}
+function knn_virus(train::T, predict::T; k::Integer=3, cutoff::Integer=1) where {T <: BipartiteNetwork}
     predictions = DataFrame(virus = String[], host = String[], match = Float64[])
     for s in species(predict; dims=1)
         @assert s in species(train)
@@ -49,8 +49,9 @@ function knn_virus(train::T, predict::T; k::Integer=5, cutoff::Integer=1) where 
         hosts_count = StatsBase.countmap(vcat(collect.([predict[n.first,:] for n in top_k])...))
         likely = filter(p -> p.second >= cutoff, sort(collect(hosts_count), by=x->x[2], rev=true))
         for l in likely
-          push!(predictions,
-            (s, l.first, k-l.second+1)
+            l.first ∈ predict[s, :] && continue
+            push!(predictions,
+                (s, l.first, l.second/k)
             )
         end
     end
@@ -64,37 +65,28 @@ ispath(predict_path) || mkpath(predict_path)
 
 ## Predict and write
 MtoB = knn_virus(M, B)
-MtoM = knn_virus(M, M)
 BtoB = knn_virus(B, B)
 
+pred_mtob = MtoB[MtoB.virus.=="Betacoronavirus",:]
+select!(pred_mtob, Not(:virus))
+pred_mtob.host = replace.(pred_mtob.host, " "=>"_")
+sort!(pred_mtob, :match, rev=true)
+
+pred_btob = BtoB[BtoB.virus.=="Betacoronavirus",:]
+select!(pred_btob, Not(:virus))
+pred_btob.host = replace.(pred_btob.host, " "=>"_")
+sort!(pred_btob, :match, rev=true)
+
 CSV.write(
-    joinpath(predict_path, "mammal-bats.all.csv"),
-    MtoB    
+    joinpath(predict_path, "PoisotTanimotoChiropteraPredictions.csv"),
+    pred_btob;
+    writeheader=false
 )
 
 CSV.write(
-    joinpath(predict_path, "mammal-bats.corona.csv"),
-    MtoB[occursin.("corona", MtoB.virus),:]
-)
-
-CSV.write(
-    joinpath(predict_path, "mammal-mammal.all.csv"),
-    MtoM    
-)
-
-CSV.write(
-    joinpath(predict_path, "mammal-mammal.corona.csv"),
-    MtoM[occursin.("corona", MtoM.virus),:]
-)
-
-CSV.write(
-    joinpath(predict_path, "bats-bats.all.csv"),
-    BtoB
-)
-
-CSV.write(
-    joinpath(predict_path, "bats-bats.corona.csv"),
-    BtoB[occursin.("corona", BtoB.virus),:]
+    joinpath(predict_path, "PoisotTanimotoMammalsPredictions.csv"),
+    pred_mtob;
+    writeheader=false
 )
 
 ## Linear filtering path
@@ -102,3 +94,42 @@ lf_path = joinpath(pwd(), "predictions", "linearfilter")
 ispath(lf_path) || mkpath(lf_path)
 
 ## Linear filtering
+predictions_lf_bats = DataFrame(species=String[], score=Float64[])
+predictions_lf_all = DataFrame(species=String[], score=Float64[])
+
+α = [0.0, 1.0, 1.0, 1.0]
+
+for i in interactions(linearfilter(B; α=α))
+    B[i.from, i.to] && continue
+    i.to ∈ species(B; dims=2) || continue
+    if i.from == "Betacoronavirus"
+        push!(predictions_lf_bats, 
+            (replace(i.to, " "=>"_"), i.probability)
+        )
+    end
+end
+
+for i in interactions(linearfilter(M; α=α))
+    M[i.from, i.to] && continue
+    i.to ∈ species(B; dims=2) || continue
+    if i.from == "Betacoronavirus"
+        push!(predictions_lf_all, 
+            (replace(i.to, " "=>"_"), i.probability)
+        )
+    end
+end
+
+sort!(predictions_lf_all, :score, rev=true)
+sort!(predictions_lf_bats, :score, rev=true)
+
+CSV.write(
+    joinpath(lf_path, "PoisotLinearFilterChiropteraPredictions.csv"),
+    predictions_lf_bats;
+    writeheader=false
+)
+
+CSV.write(
+    joinpath(lf_path, "PoisotLinearFilterMammalsPredictions.csv"),
+    predictions_lf_all;
+    writeheader=false
+)
