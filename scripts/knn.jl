@@ -66,6 +66,7 @@ ispath(predict_path) || mkpath(predict_path)
 ## Predict and write
 MtoB = knn_virus(M, B)
 BtoB = knn_virus(B, B)
+MtoM = knn_virus(M, M)
 
 pred_mtob = MtoB[MtoB.virus.=="Betacoronavirus",:]
 select!(pred_mtob, Not(:virus))
@@ -77,15 +78,26 @@ select!(pred_btob, Not(:virus))
 pred_btob.host = replace.(pred_btob.host, " "=>"_")
 sort!(pred_btob, :match, rev=true)
 
+pred_mtom = MtoM[MtoM.virus.=="Betacoronavirus",:]
+select!(pred_mtom, Not(:virus))
+pred_mtom.host = replace.(pred_mtom.host, " "=>"_")
+sort!(pred_mtom, :match, rev=true)
+
 CSV.write(
-    joinpath(predict_path, "PoisotTanimotoChiropteraPredictions.csv"),
+    joinpath(predict_path, "PoisotTanimotoChiropteraToChiropteraPredictions.csv"),
     pred_btob;
     writeheader=false
 )
 
 CSV.write(
-    joinpath(predict_path, "PoisotTanimotoMammalsPredictions.csv"),
+    joinpath(predict_path, "PoisotTanimotoMammalsToChiropteraPredictions.csv"),
     pred_mtob;
+    writeheader=false
+)
+
+CSV.write(
+    joinpath(predict_path, "PoisotTanimotoMammalsToMammalsPredictions.csv"),
+    pred_mtom;
     writeheader=false
 )
 
@@ -96,6 +108,7 @@ ispath(lf_path) || mkpath(lf_path)
 ## Linear filtering
 predictions_lf_bats = DataFrame(species=String[], score=Float64[])
 predictions_lf_all = DataFrame(species=String[], score=Float64[])
+predictions_lf_meta = DataFrame(species=String[], score=Float64[])
 
 α = [0.0, 1.0, 1.0, 1.0]
 
@@ -119,17 +132,34 @@ for i in interactions(linearfilter(M; α=α))
     end
 end
 
+for i in interactions(linearfilter(M; α=α))
+    M[i.from, i.to] && continue
+    i.to ∈ species(M; dims=2) || continue
+    if i.from == "Betacoronavirus"
+        push!(predictions_lf_meta, 
+            (replace(i.to, " "=>"_"), i.probability)
+        )
+    end
+end
+
 sort!(predictions_lf_all, :score, rev=true)
 sort!(predictions_lf_bats, :score, rev=true)
+sort!(predictions_lf_meta, :score, rev=true)
 
 CSV.write(
-    joinpath(lf_path, "PoisotLinearFilterChiropteraPredictions.csv"),
+    joinpath(lf_path, "PoisotLinearFilterChiropteraToChiropteraPredictions.csv"),
     predictions_lf_bats;
     writeheader=false
 )
 
 CSV.write(
-    joinpath(lf_path, "PoisotLinearFilterMammalsPredictions.csv"),
+    joinpath(lf_path, "PoisotLinearFilterMammalsToChiropteraPredictions.csv"),
     predictions_lf_all;
+    writeheader=false
+)
+
+CSV.write(
+    joinpath(lf_path, "PoisotLinearFilterMammalsToMammalsPredictions.csv"),
+    predictions_lf_meta;
     writeheader=false
 )
