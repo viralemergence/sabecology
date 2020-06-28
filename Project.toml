@@ -10,7 +10,7 @@ PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-CSV = "0.6"
+CSV = "0.6, 0.7"
 DataFrames = "0.20"
 ExcelFiles = "1.0"
 GBIF = "0.2"
